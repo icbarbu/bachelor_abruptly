@@ -31,7 +31,7 @@ class ConsolidateData:
 
             print(self.experiment, run)
 
-            measures = ['steps', 'total_success', 'total_distance', 'rewards']
+            measures = ['steps', 'total_success', 'total_hurt', 'rewards']
             data = self.recover_latest_checkpoint(experiment, run)
 
             df = pd.DataFrame(data, columns=['episode']+measures)
@@ -44,7 +44,7 @@ class ConsolidateData:
             df_relevant = df.groupby(['episode', 'val_index']).agg(
                             steps=('steps', max),
                             total_success=('total_success', max),
-                            total_distance=('total_distance', max),
+                            total_hurt=('total_hurt', max),
                             rewards=('rewards', sum)
                         ).reset_index()
 
@@ -52,7 +52,7 @@ class ConsolidateData:
             df_avg_intra = df_relevant.groupby('episode').agg(
                             steps=('steps', 'mean'),
                             total_success=('total_success', 'mean'),
-                            total_distance=('total_distance', 'mean'),
+                            total_hurt=('total_hurt', 'mean'),
                             rewards=('rewards', 'mean')
                         ).reset_index()
 
@@ -83,13 +83,13 @@ class ConsolidateData:
                                     total_success_min=('total_success', 'min'),
                                     total_success_q25=('total_success', self.q25),
                                     total_success_q75=('total_success', self.q75),
-                                    total_distance_median=('total_success', 'median'),
-                                    total_distance_mean=('total_distance', 'mean'),
-                                    total_distance_std=('total_distance', 'std'),
-                                    total_distance_max=('total_distance', 'max'),
-                                    total_distance_min=('total_distance', 'min'),
-                                    total_distance_q25=('total_distance', self.q25),
-                                    total_distance_q75=('total_distance', self.q75),
+                                    total_hurt_median=('total_success', 'median'),
+                                    total_hurt_mean=('total_hurt', 'mean'),
+                                    total_hurt_std=('total_hurt', 'std'),
+                                    total_hurt_max=('total_hurt', 'max'),
+                                    total_hurt_min=('total_hurt', 'min'),
+                                    total_hurt_q25=('total_hurt', self.q25),
+                                    total_hurt_q75=('total_hurt', self.q75),
                                     rewards_median=('rewards', 'median'),
                                     rewards_mean=('rewards', 'mean'),
                                     rewards_std=('rewards', 'std'),
@@ -128,22 +128,14 @@ class ConsolidateData:
         return x.quantile(0.75)
 
 
-experiments = ["test-1"]
+experiments = ["6"]
 
 for experiment in experiments:
     # TODO: What does "runs" do since I can just create the data?
     # I thought it stands for the index in model_checkpoint_{index}
     cd = ConsolidateData(
             experiment=experiment,
-            runs=range(1, 16)
+            runs=range(1, 2)
     )
 
     cd.run()
-
-
-
-
-
-
-
-

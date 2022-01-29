@@ -4,6 +4,7 @@ import os
 import time
 import traceback
 import vrep
+import numpy as np
 
 from info_log import Log
 from stable_baselines3.common.callbacks import BaseCallback
@@ -31,7 +32,8 @@ class CustomCallback(BaseCallback):
             #     while self.experiment_manager.env.robot.is_simulation_running():
             #         pass
             #     vrep.simxSetBooleanParameter(self.experiment_manager.env.robot._clientID, 25, False, vrep.simx_opmode_oneshot)
-
+            food_list = []
+            hurt_list = []
             for i in range(1, self.experiment_manager.config.number_validations+1):
                 self.experiment_manager.mode_train_validation = 'validation'
 
@@ -45,6 +47,11 @@ class CustomCallback(BaseCallback):
                     obs, reward, done, _ = self.experiment_manager.env.step(action)
 
                 self.experiment_manager.mode_train_validation = 'train'
+                food_per_episode = self.experiment_manager.env.total_success
+                hurt_per_episode = self.experiment_manager.env.total_hurt
+
+                food_list.append(food_per_episode)
+                hurt_list.append(hurt_per_episode)
 
             self.experiment_manager.config.pos = -1
 
@@ -55,6 +62,8 @@ class CustomCallback(BaseCallback):
             #             pass
             #         vrep.simxSetBooleanParameter(self.experiment_manager.env.robot._clientID, 25, True, vrep.simx_opmode_oneshot)
 
+            self.logger.record('Food', np.mean(food_list))
+            self.logger.record('Hurt', np.mean(hurt_list))
             print(' ')
 
     def save_checkpoint(self):
@@ -239,7 +248,4 @@ class ExperimentManager:
         else:
             self.results_episodes, self.results_episodes_validation, self.current_checkpoint, self.current_episode = env_data
         env2 = self.env
-        self.model = self.load(f'{dir}/model_checkpoint_{checkpoint}',
-                               '',
-                               env=env2,
-                               config=self.config)
+        self.model = self.load(f'{dir}/model_checkpoint_{checkpoint}',env=env2)

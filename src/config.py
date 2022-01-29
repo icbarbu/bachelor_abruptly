@@ -127,8 +127,8 @@ class Config:
 
         self.parser.add_argument(
             '--task',
-            default='navigate', type=str,
-            help="navigate/collect/deliver"
+            default='foraging', type=str,
+            help="foraging or avoiding"
         )
         ##
 

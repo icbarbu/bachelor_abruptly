@@ -354,13 +354,23 @@ class SimulationRobobo(Robobo):
 
             # x/y/z
             positions = [
-                [-4, -1.5, 0.03715137392282486],
-                [-3, -1, 0.03715137392282486],
-                [-4, -1.2, 0.03715137392282486],
-                [-3, -0.8, 0.03715137392282486],
-                [-2.5, -0.9, 0.03715137392282486],
-                [-3, -1.1, 0.03715137392282486]
+                [-2.5, -1, 0.04],
+                [-2.5, -1, 0.04],
+                [-2.5, -1, 0.04],
+                [-2.5, -1, 0.04],
+                [-2.5, -1, 0.04],
+                [-2.5, -1, 0.04]
             ]
+
+
+            # [
+            #     [-4, -1.5, 0.03715137392282486],
+            #     [-3, -1, 0.03715137392282486],
+            #     [-4, -1.2, 0.03715137392282486],
+            #     [-3, -0.8, 0.03715137392282486],
+            #     [-2.5, -0.9, 0.03715137392282486],
+            #     [-3, -1.1, 0.03715137392282486]
+            # ]
 
             # -/yaw/-
                 # [1.5724095106124878, -1.960279035568237, 1.5723344087600708],
@@ -402,7 +412,7 @@ class SimulationRobobo(Robobo):
             vrep.simxCallScriptFunction(self._clientID, "Food", vrep.sim_scripttype_childscript, "remote_get_collected_food",
                                         [],[],[],bytearray(),vrep.simx_opmode_blocking)
         )
-        return ints[0], floats[0]
+        return [ints[0], ints[1]], [floats[0], floats[1]]
     
     def touched_finish(self):
         ints, floats, strings, buffer = vrep.unwrap_vrep(
@@ -417,5 +427,10 @@ class SimulationRobobo(Robobo):
                                         [],[],[],bytearray(),vrep.simx_opmode_blocking)
         )
         return ints[0], floats[0]
-    
-    
+
+    def get_food_setup(self):
+        ints, floats, strings, buffer = vrep.unwrap_vrep(
+            vrep.simxCallScriptFunction(self._clientID, "Food", vrep.sim_scripttype_childscript, "remote_get_initial_food_setup",
+                                        [],[],[],bytearray(),vrep.simx_opmode_blocking)
+        )
+        return strings[0], strings[1]
