@@ -110,6 +110,7 @@ class ExperimentManager:
                                         self.env.current_step,
                                         self.env.total_success,
                                         self.env.total_hurt,
+                                        self.env.total_distance,
                                         rewards])
         else:
             self.results_episodes_validation.append([
@@ -117,6 +118,7 @@ class ExperimentManager:
                                         self.env.current_step,
                                         self.env.total_success,
                                         self.env.total_hurt,
+                                        self.env.total_distance,
                                         rewards])
 
 

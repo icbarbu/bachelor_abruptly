@@ -31,7 +31,7 @@ class ConsolidateData:
 
             print(self.experiment, run)
 
-            measures = ['steps', 'total_success', 'total_hurt', 'rewards']
+            measures = ['steps', 'total_success', 'total_hurt', 'rewards', 'distance']
             data = self.recover_latest_checkpoint(experiment, run)
 
             df = pd.DataFrame(data, columns=['episode']+measures)
@@ -45,7 +45,8 @@ class ConsolidateData:
                             steps=('steps', max),
                             total_success=('total_success', max),
                             total_hurt=('total_hurt', max),
-                            rewards=('rewards', sum)
+                            rewards=('rewards', sum),
+                            distance=('distance', max),
                         ).reset_index()
 
             #  average validation episodes
@@ -53,7 +54,8 @@ class ConsolidateData:
                             steps=('steps', 'mean'),
                             total_success=('total_success', 'mean'),
                             total_hurt=('total_hurt', 'mean'),
-                            rewards=('rewards', 'mean')
+                            rewards=('rewards', 'mean'),
+                            distance=('distance', 'mean'),
                         ).reset_index()
 
             df_avg_intra['episode'] = range(1, len(df_avg_intra)+1)
@@ -83,7 +85,7 @@ class ConsolidateData:
                                     total_success_min=('total_success', 'min'),
                                     total_success_q25=('total_success', self.q25),
                                     total_success_q75=('total_success', self.q75),
-                                    total_hurt_median=('total_success', 'median'),
+                                    total_hurt_median=('total_hurt', 'median'),
                                     total_hurt_mean=('total_hurt', 'mean'),
                                     total_hurt_std=('total_hurt', 'std'),
                                     total_hurt_max=('total_hurt', 'max'),
@@ -96,7 +98,14 @@ class ConsolidateData:
                                     rewards_max=('rewards', 'max'),
                                     rewards_min=('rewards', 'min'),
                                     rewards_q25=('rewards', self.q25),
-                                    rewards_q75=('rewards', self.q75)
+                                    rewards_q75=('rewards', self.q75),
+                                    distance_median=('distance', 'median'),
+                                    distance_mean=('distance', 'mean'),
+                                    distance_std=('distance', 'std'),
+                                    distance_max=('distance', 'max'),
+                                    distance_min=('distance', 'min'),
+                                    distance_q25=('distance', self.q25),
+                                    distance_q75=('distance', self.q75)
                                     ).reset_index()
 
         print(f'{self.dir}anal/{self.experiment}_full_data_agreg.csv')
@@ -128,7 +137,7 @@ class ConsolidateData:
         return x.quantile(0.75)
 
 
-experiments = ["6"]
+experiments = ["1", "2", "3"]
 
 for experiment in experiments:
     # TODO: What does "runs" do since I can just create the data?

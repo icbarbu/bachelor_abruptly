@@ -91,6 +91,7 @@ else:
 
         full_data_agreg = pd.read_csv(f'experiments/anal/{experiment}_full_data.csv')
         exp_run = full_data_agreg[(full_data_agreg['experiment'] == int(experiment))] #& (full_data_agreg['run'] == int(run))
+        exp_run = exp_run[exp_run['distance'] == exp_run["distance"].min()]
         exp_run = exp_run[exp_run['total_hurt'] == exp_run["total_hurt"].min()]
         exp_run = exp_run[(exp_run['total_success'] == exp_run["total_success"].max())]
         exp_run = exp_run[exp_run['steps'] == exp_run["steps"].min()]

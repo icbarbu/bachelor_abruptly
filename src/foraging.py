@@ -38,11 +38,13 @@ class ForagingEnv(gym.Env):
         self.total_success = 0
         self.total_hurt = 0
         self.current_step = 0
-        self.touched_trigger = None
         self.exp_manager = None
         self.episode_length = 0
         self.food_setup = dict()
         self.last_touched_food = None
+        self.last_distance = None
+        self.total_distance = 0
+        self.last_robobo_position = None
 
         # Define action and sensors space
         self.action_space = spaces.Box(low=0, high=1,
@@ -72,9 +74,9 @@ class ForagingEnv(gym.Env):
         self.total_success = 0
         self.total_hurt = 0
         self.current_step = 0
-        self.touched_trigger = None
-        self.food_setup = dict()
-        self.last_touched_food = None
+        self.last_distance = None
+        self.total_distance = 0
+        self.last_robobo_position = None
 
         self.exp_manager.register_episode()
 
@@ -101,7 +103,7 @@ class ForagingEnv(gym.Env):
         sensors = np.append(sensors, [color_y, color_x, prop_green_points, color_y_gray, color_x_gray, prop_gray_points,  robobo_position[0], robobo_position[1]])
         sensors = np.array(sensors).astype(np.float32)
 
-        self.initialize_food_setup()
+        # self.initialize_food_setup()
 
         return sensors
 
@@ -203,31 +205,10 @@ class ForagingEnv(gym.Env):
 
         # calculates rewards
         touched_finish = self.robot.touched_finish()[0]
-        touched_trigger = self.robot.touched_trigger()[0]
-        
-        if touched_trigger and self.touched_trigger is None:
-            self.touched_trigger = True
-
-        if collected_food - self.total_success > 0:
-            food_reward = self.food_reward
-        else:
-            food_reward = 0
-
-        self.total_success = collected_food
-
-        next_goal_reward = 0
-        if (not self.last_touched_food and last_touched_food):
-            self.set_next_active_food(str(last_touched_food))
-            next_goal_reward = 1000
-        elif (self.last_touched_food and self.last_touched_food != last_touched_food):
-            self.set_next_active_food(str(last_touched_food))
-            next_goal_reward = 1000
 
         robobo_position = self.robot.position()
-        active_food_position = self.get_active_food_position()
-        distance_reward = self.distance_from_goal(robobo_position, active_food_position[0], active_food_position[1])
-
-        # print(f"Goal :{self.get_active_food_handle()}, located at {active_food_position[0], active_food_position[1]}. \t Distance: {distance}")
+        
+        distance, distance_reward = self.distance_from_goal(robobo_position)
 
         hit_wall_penalty = 0
         # if x and y are different than 0 which is the default value
@@ -241,11 +222,22 @@ class ForagingEnv(gym.Env):
             sight = -10
         
         sensors = np.append(sensors, [color_y, color_x, prop_green_points, color_y_gray, color_x_gray, prop_gray_points, robobo_position[0], robobo_position[1]])
-        reward = hit_wall_penalty + food_reward + sight + touched_finish * 10000 + next_goal_reward
+        reward = hit_wall_penalty + sight + touched_finish * 10000
+        
+        if self.last_distance and distance < self.last_distance:
+            self.total_success += 1
+
+        self.last_distance = distance
+
+        if self.last_robobo_position:
+            robobo_distance, _ = self.distance_from_goal(robobo_position, self.last_robobo_position[0], self.last_robobo_position[1])
+            self.total_distance += robobo_distance
+
+        self.last_robobo_position = robobo_position
 
         # if episode is over
         # TODO: move this print after counter
-        if self.current_step == self.episode_length-1 or touched_finish: #or collected_food == self.max_food
+        if self.current_step == self.episode_length-1 or touched_finish:
             self.done = True
             self.exp_manager.food_print()
 
@@ -265,13 +257,13 @@ class ForagingEnv(gym.Env):
     def close(self):
         pass
 
-    def distance_from_goal(self, current_position, target_x=-2.5, target_y=-1):
+    def distance_from_goal(self, current_position, target_x=1.35, target_y=0.8):
         x1 = current_position[0]
         y1 = current_position[1]
         distance = (((float(target_x) - x1 )**2) + ((float(target_y)-y1)**2))
-        nicer_distance =(((float(target_x) - x1 )**2) + ((float(target_y)-y1)**2))**0.4
+        # print("distance", distance, "reward", 1 - (distance/26)**0.4)
         
-        return 1/nicer_distance
+        return distance, 1 - (distance/26)
 
     def get_infrared(self):
 
