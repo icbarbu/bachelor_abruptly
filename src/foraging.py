@@ -263,7 +263,7 @@ class ForagingEnv(gym.Env):
         distance = (((float(target_x) - x1 )**2) + ((float(target_y)-y1)**2))
         # print("distance", distance, "reward", 1 - (distance/26)**0.4)
         
-        return distance, 1 - (distance/26)
+        return distance, 1 - (distance/20) * 10
 
     def get_infrared(self):
 
