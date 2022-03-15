@@ -110,16 +110,16 @@ class ExperimentManager:
                                         self.env.current_step,
                                         self.env.total_success,
                                         self.env.total_hurt,
-                                        self.env.total_distance,
-                                        rewards])
+                                        rewards,
+                                        self.env.total_distance])
         else:
             self.results_episodes_validation.append([
                                         self.current_episode,
                                         self.env.current_step,
                                         self.env.total_success,
                                         self.env.total_hurt,
-                                        self.env.total_distance,
-                                        rewards])
+                                        rewards,
+                                        self.env.total_distance])
 
 
     def food_print(self):
