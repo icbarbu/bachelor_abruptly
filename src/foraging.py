@@ -204,8 +204,10 @@ class ForagingEnv(gym.Env):
             self.episode_length = self.config.episode_test_steps
 
         # calculates rewards
-        touched_finish = self.robot.touched_finish()[0]
-
+        try: 
+            touched_finish = self.robot.touched_finish()[0]
+        except: 
+            print('NO FINISH')
         robobo_position = self.robot.position()
         
         distance, distance_reward = self.distance_from_goal(robobo_position)
