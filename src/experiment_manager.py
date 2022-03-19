@@ -99,12 +99,12 @@ class ExperimentManager:
         self.mode_train_validation = 'train'
 
     def register_episode(self):
-        if self.mode_train_validation == 'train':
+        if self.mode_train_validation == 'validation':
             self.current_episode += 1
 
     def register_step(self, rewards):
 
-        if self.mode_train_validation == 'train':
+        if self.mode_train_validation == 'validation':
             self.results_episodes.append([
                                         self.current_episode,
                                         self.env.current_step,

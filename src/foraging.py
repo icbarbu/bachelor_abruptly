@@ -208,6 +208,7 @@ class ForagingEnv(gym.Env):
             touched_finish = self.robot.touched_finish()[0]
         except: 
             print('NO FINISH')
+            touched_finish = 0
         robobo_position = self.robot.position()
         
         distance, distance_reward = self.distance_from_goal(robobo_position)
